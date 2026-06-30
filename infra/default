@@ -26,6 +26,9 @@ server {
         try_files $uri /taski/index.html;
     }
 
+    location = /taski {
+        return 301 /taski/;
+    }
     # ---------- Kittygram (корень) ----------
     # API Kittygram
     location /api/ {
