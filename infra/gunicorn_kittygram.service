@@ -1,0 +1,26 @@
+[Unit]
+# Это текстовое описание юнита, пояснение для разработчика.
+Description=gunicorn daemon 
+
+# Условие: при старте операционной системы запускать процесс только после того, 
+# как операционная система загрузится и настроит подключение к сети.
+# Ссылка на документацию с возможными вариантами значений 
+# https://systemd.io/NETWORK_ONLINE/
+After=network.target 
+
+[Service]
+# От чьего имени будет происходить запуск:
+# укажите имя, под которым вы подключались к серверу.
+User=ubuntu
+
+# Путь к директории проекта.
+WorkingDirectory=/home/ubuntu/infra_sprint1/backend/
+
+# Команду, которую вы запускали руками, теперь будет запускать systemd.
+ExecStart=/home/ubuntu/infra_sprint1/backend/venv/bin/gunicorn --bind 127.0.0.1:9793 kittygram_backend.wsgi:application
+
+[Install]
+# В этом параметре указывается вариант запуска процесса.
+# Значение <multi-user.target> указывает, чтобы systemd запустил процесс
+# доступный всем пользователям и без графического интерфейса.
+WantedBy=multi-user.target

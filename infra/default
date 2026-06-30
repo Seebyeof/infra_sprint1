@@ -1,0 +1,84 @@
+server {
+    server_name seebyeyapr.ddns.net;
+    client_max_body_size 20M;
+
+    # ---------- Kittygram (корень) ----------
+    # Корневой локейшн для фронтенда Kittygram
+    location / {
+        root /var/www/kittygram;
+        try_files $uri /index.html;
+    }
+
+    # API Kittygram
+    location /api/ {
+        proxy_pass http://127.0.0.1:9793;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 20M;   # для загрузки фото
+    }
+
+    # Админка Kittygram
+    location /admin/ {
+        proxy_pass http://127.0.0.1:9793;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Статика Kittygram (собранная через collectstatic)
+    location /static_backend/ {
+        alias /var/www/kittygram/static_backend/;
+        expires 30d;
+    }
+
+    # Медиа Kittygram
+    location /media/ {
+        alias /var/www/kittygram/media/;
+        expires 30d;
+    }
+
+    # ---------- Taski (на /taski/) ----------
+    # Фронтенд Taski
+    location /taski/ {
+        root /var/www;
+        try_files $uri /taski/index.html;
+    }
+
+    # API Taski
+    location /taski/api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Админка Taski
+    location /taski/admin/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # SSL
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/seebyeyapr.ddns.net/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/seebyeyapr.ddns.net/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+
+# HTTP → HTTPS
+server {
+    if ($host = seebyeyapr.ddns.net) {
+        return 301 https://$host$request_uri;
+    }
+    listen 80;
+    server_name seebyeyapr.ddns.net;
+    return 404;
+}

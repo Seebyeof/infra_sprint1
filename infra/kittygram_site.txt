@@ -1,0 +1,5 @@
+IP: 158.160.230.59;
+name_taski: https://seebyeyapr.ddns.net/taski;
+name_kittygram: https://seebyeyapr.ddns.net;
+login: seebye;
+password: NewEra.20102024;
