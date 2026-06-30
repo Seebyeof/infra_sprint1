@@ -2,13 +2,31 @@ server {
     server_name seebyeyapr.ddns.net;
     client_max_body_size 20M;
 
-    # ---------- Kittygram (корень) ----------
-    # Корневой локейшн для фронтенда Kittygram
-    location / {
-        root /var/www/kittygram;
-        try_files $uri /index.html;
+    # ---------- Taski (на /taski/) ----------
+    # API Taski
+    location /taski/api/ {
+        proxy_pass http://127.0.0.1:8000/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    # Админка Taski
+    location /taski/admin/ {
+        proxy_pass http://127.0.0.1:8000/api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    # Фронтенд Taski
+    location /taski/ {
+        root /var/www;
+        try_files $uri /taski/index.html;
+    }
+
+    # ---------- Kittygram (корень) ----------
     # API Kittygram
     location /api/ {
         proxy_pass http://127.0.0.1:9793;
@@ -40,29 +58,10 @@ server {
         expires 30d;
     }
 
-    # ---------- Taski (на /taski/) ----------
-    # Фронтенд Taski
-    location /taski/ {
-        root /var/www;
-        try_files $uri /taski/index.html;
-    }
-
-    # API Taski
-    location /taski/api/ {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # Админка Taski
-    location /taski/admin/ {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+    # Корневой локейшн для фронтенда Kittygram
+    location / {
+        root /var/www/kittygram;
+        try_files $uri /index.html;
     }
 
     # SSL
