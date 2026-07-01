@@ -12,7 +12,7 @@ After=network.target
 # От чьего имени будет происходить запуск:
 # укажите имя, под которым вы подключались к серверу.
 User=ubuntu
-
+EnvironmentFile=/etc/gunicorn/secrets.conf
 # Путь к директории проекта.
 WorkingDirectory=/home/ubuntu/infra_sprint1/backend/
 
